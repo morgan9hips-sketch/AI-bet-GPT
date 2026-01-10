@@ -25,7 +25,7 @@ export default function UpgradePrompt({
           <p className="text-blue-100 mb-4">
             {remainingAnalyses > 0
               ? `You have ${remainingAnalyses} free analyses remaining today.`
-              : 'You've reached your daily free analysis limit.'}
+              : "You've reached your daily free analysis limit."}
           </p>
           
           <ul className="space-y-2 mb-6">

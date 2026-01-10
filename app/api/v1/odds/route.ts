@@ -31,17 +31,15 @@ export async function GET(request: NextRequest) {
 
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams;
-    const sport = searchParams.get('sport') || 'americanfootball_nfl';
-    const region = searchParams.get('region') || 'us';
-    const markets = searchParams.get('markets') || 'h2h';
+    const sport = (searchParams.get('sport') || 'americanfootball_nfl') as 'americanfootball_nfl' | 'soccer_epl';
 
     // Generate cache key
-    const cacheKey = generateCacheKey('api:odds', { sport, region, markets });
+    const cacheKey = generateCacheKey('api:odds', { sport });
 
     // Fetch with caching
     const odds = await withCache(
       cacheKey,
-      () => getOdds(sport, region, markets),
+      () => getOdds(sport),
       { ttl: CACHE_DURATIONS.ODDS }
     );
 

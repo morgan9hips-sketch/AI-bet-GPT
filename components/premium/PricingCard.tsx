@@ -109,7 +109,7 @@ const TIER_INFO = {
 export default function PricingCard({ tier, highlighted = false }: PricingCardProps) {
   const info = TIER_INFO[tier];
 
-  const colorClasses = {
+  const colorClasses: Record<string, string> = {
     gray: 'border-gray-300 dark:border-gray-700',
     blue: 'border-blue-500 shadow-blue-500/20',
     green: 'border-green-500 shadow-green-500/20',
@@ -118,7 +118,7 @@ export default function PricingCard({ tier, highlighted = false }: PricingCardPr
     red: 'border-red-500 shadow-red-500/20',
   };
 
-  const buttonClasses = {
+  const buttonClasses: Record<string, string> = {
     gray: 'bg-gray-600 hover:bg-gray-700',
     blue: 'bg-blue-600 hover:bg-blue-700',
     green: 'bg-green-600 hover:bg-green-700',
