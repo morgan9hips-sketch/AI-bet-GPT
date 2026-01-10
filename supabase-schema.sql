@@ -38,7 +38,30 @@ CREATE TABLE public.bets (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- API usage tracking
+-- API Keys table (for B2B API access)
+CREATE TABLE public.api_keys (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  key_hash TEXT UNIQUE NOT NULL,
+  key_prefix TEXT NOT NULL,
+  plan_tier TEXT NOT NULL CHECK (plan_tier IN ('hobby', 'pro', 'business', 'enterprise')),
+  calls_limit INTEGER NOT NULL,
+  calls_used INTEGER NOT NULL DEFAULT 0,
+  reset_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  last_used_at TIMESTAMP WITH TIME ZONE,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Cache table (for API response caching)
+CREATE TABLE public.cache (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- API usage tracking (legacy - can be removed if not used)
 CREATE TABLE public.api_usage (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -55,12 +78,17 @@ CREATE INDEX idx_bets_user_id ON public.bets(user_id);
 CREATE INDEX idx_bets_status ON public.bets(status);
 CREATE INDEX idx_bets_created_at ON public.bets(created_at DESC);
 CREATE INDEX idx_api_usage_user_id ON public.api_usage(user_id);
+CREATE INDEX idx_api_keys_user_id ON public.api_keys(user_id);
+CREATE INDEX idx_api_keys_key_hash ON public.api_keys(key_hash);
+CREATE INDEX idx_cache_expires ON public.cache(expires_at);
 
 -- Row Level Security (RLS) Policies
 ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.predictions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.api_usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
+-- Cache table doesn't need RLS as it's managed by service role
 
 -- User profiles policies
 CREATE POLICY "Users can view their own profile"
@@ -98,6 +126,19 @@ CREATE POLICY "Users can view their own API usage"
   ON public.api_usage FOR SELECT
   USING (auth.uid() = user_id);
 
+-- API keys policies
+CREATE POLICY "Users can view their own API keys"
+  ON public.api_keys FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own API keys"
+  ON public.api_keys FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own API keys"
+  ON public.api_keys FOR UPDATE
+  USING (auth.uid() = user_id);
+
 -- Function to reset daily predictions count
 CREATE OR REPLACE FUNCTION reset_daily_predictions()
 RETURNS void AS $$
@@ -129,3 +170,13 @@ CREATE TRIGGER update_bets_updated_at
   BEFORE UPDATE ON public.bets
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- Function to increment API call counter atomically
+CREATE OR REPLACE FUNCTION increment_api_calls(api_key_id UUID)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.api_keys
+  SET calls_used = calls_used + 1
+  WHERE id = api_key_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
