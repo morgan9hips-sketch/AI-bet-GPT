@@ -14,6 +14,7 @@ export default function Navigation() {
     { href: '/nfl', label: 'NFL', icon: '🏈' },
     { href: '/epl', label: 'EPL', icon: '⚽' },
     { href: '/pricing', label: 'Pricing', icon: '💎' },
+    { href: '/api-docs', label: 'API Docs', icon: '📖' },
   ];
 
   return (
