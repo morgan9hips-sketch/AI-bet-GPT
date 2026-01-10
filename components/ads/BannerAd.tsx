@@ -23,9 +23,7 @@ export default function BannerAd({ className = '', refreshInterval = 60 }: Banne
     const loadAd = () => {
       if (adRef.current && typeof window !== 'undefined') {
         try {
-          // @ts-ignore - AdMob types not available
           if (window.adsbygoogle) {
-            // @ts-ignore
             (window.adsbygoogle = window.adsbygoogle || []).push({});
           }
         } catch (error) {

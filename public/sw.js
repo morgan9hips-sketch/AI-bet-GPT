@@ -91,23 +91,17 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// Background sync for offline bet tracking
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-bets') {
-    event.waitUntil(syncBets());
-  }
-});
+// Background sync for offline bet tracking (feature coming soon)
+// self.addEventListener('sync', (event) => {
+//   if (event.tag === 'sync-bets') {
+//     event.waitUntil(syncBets());
+//   }
+// });
 
-async function syncBets() {
-  try {
-    // Get pending bets from IndexedDB or cache
-    // Sync them to the server
-    console.log('Syncing bets...');
-    // Implementation would go here
-  } catch (error) {
-    console.error('Bet sync failed:', error);
-  }
-}
+// async function syncBets() {
+//   // TODO: Implement offline bet syncing
+//   console.log('Bet sync placeholder - feature coming soon');
+// }
 
 // Push notifications (for premium features)
 self.addEventListener('push', (event) => {
