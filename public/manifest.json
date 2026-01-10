@@ -1,24 +1,47 @@
 {
-  "name": "AI Bet GPT",
-  "short_name": "AI Bet GPT",
-  "description": "AI-powered sports betting predictions with confidence scores",
+  "name": "AI.bet-GPT - Sports Betting Analysis",
+  "short_name": "AI.bet-GPT",
+  "description": "AI-powered sports betting predictions and analysis platform with real-time odds",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["sports", "entertainment"],
-  "screenshots": []
+  "categories": ["sports", "entertainment", "finance"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Chat",
+      "short_name": "Chat",
+      "description": "Get AI predictions",
+      "url": "/chat"
+    },
+    {
+      "name": "Bets",
+      "short_name": "Bets",
+      "description": "Track your bets",
+      "url": "/bets"
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View statistics",
+      "url": "/dashboard"
+    }
+  ],
+  "prefer_related_applications": false
 }
