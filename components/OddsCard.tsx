@@ -31,7 +31,7 @@ export default function OddsCard({ fixture, onSelect }: OddsCardProps) {
           });
         } else if (market.key === 'spreads') {
           market.outcomes.forEach((outcome) => {
-            if (!bestSpread[outcome.name] || outcome.price > bestSpread[outcome.name].price) {
+            if (outcome.point !== undefined && (!bestSpread[outcome.name] || outcome.price > bestSpread[outcome.name].price)) {
               bestSpread[outcome.name] = {
                 point: outcome.point,
                 price: outcome.price,
@@ -41,7 +41,7 @@ export default function OddsCard({ fixture, onSelect }: OddsCardProps) {
           });
         } else if (market.key === 'totals') {
           market.outcomes.forEach((outcome) => {
-            if (!bestTotal[outcome.name] || outcome.price > bestTotal[outcome.name].price) {
+            if (outcome.point !== undefined && (!bestTotal[outcome.name] || outcome.price > bestTotal[outcome.name].price)) {
               bestTotal[outcome.name] = {
                 point: outcome.point,
                 price: outcome.price,

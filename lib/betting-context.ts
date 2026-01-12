@@ -111,18 +111,21 @@ function findBestSpreads(
   markets: Array<{ bookmaker: string; outcomes: any[] }>,
   homeTeam: string,
   awayTeam: string
-) {
+): {
+  home: { point: number; price: number } | null;
+  away: { point: number; price: number } | null;
+} {
   let bestHome: { point: number; price: number } | null = null;
   let bestAway: { point: number; price: number } | null = null;
 
   markets.forEach((market) => {
     market.outcomes.forEach((outcome) => {
-      if (outcome.name === homeTeam) {
+      if (outcome.name === homeTeam && outcome.point !== undefined) {
         if (!bestHome || outcome.price > bestHome.price) {
           bestHome = { point: outcome.point, price: outcome.price };
         }
       }
-      if (outcome.name === awayTeam) {
+      if (outcome.name === awayTeam && outcome.point !== undefined) {
         if (!bestAway || outcome.price > bestAway.price) {
           bestAway = { point: outcome.point, price: outcome.price };
         }
@@ -136,18 +139,21 @@ function findBestSpreads(
 /**
  * Find best totals
  */
-function findBestTotals(markets: Array<{ bookmaker: string; outcomes: any[] }>) {
+function findBestTotals(markets: Array<{ bookmaker: string; outcomes: any[] }>): {
+  over: { point: number; price: number } | null;
+  under: { point: number; price: number } | null;
+} {
   let bestOver: { point: number; price: number } | null = null;
   let bestUnder: { point: number; price: number } | null = null;
 
   markets.forEach((market) => {
     market.outcomes.forEach((outcome) => {
-      if (outcome.name === 'Over') {
+      if (outcome.name === 'Over' && outcome.point !== undefined) {
         if (!bestOver || outcome.price > bestOver.price) {
           bestOver = { point: outcome.point, price: outcome.price };
         }
       }
-      if (outcome.name === 'Under') {
+      if (outcome.name === 'Under' && outcome.point !== undefined) {
         if (!bestUnder || outcome.price > bestUnder.price) {
           bestUnder = { point: outcome.point, price: outcome.price };
         }

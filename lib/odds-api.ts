@@ -18,6 +18,7 @@ export interface OddsData {
       outcomes: Array<{
         name: string;
         price: number;
+        point?: number; // For spreads and totals
       }>;
     }>;
   }>;
