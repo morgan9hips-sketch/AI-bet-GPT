@@ -1,15 +1,31 @@
 import { OddsData } from './odds-api';
 import { formatOdds } from '@/utils/parlay-calculator';
+import { getSportById, getAnalysisFactors } from './sport-config';
 
 /**
- * Format odds data for AI consumption
+ * Format odds data for AI consumption with multi-sport support
  */
-export function formatOddsForAI(oddsData: OddsData[]): string {
+export function formatOddsForAI(oddsData: OddsData[], sportId?: string): string {
   if (!oddsData || oddsData.length === 0) {
     return 'No live odds available at the moment.';
   }
 
   let formattedOdds = '=== LIVE BETTING ODDS ===\n\n';
+
+  // Add sport-specific analysis factors if provided
+  if (sportId) {
+    const sport = getSportById(sportId);
+    const factors = getAnalysisFactors(sportId);
+    
+    if (sport && factors.length > 0) {
+      formattedOdds += `SPORT: ${sport.name} ${sport.flag}\n`;
+      formattedOdds += `KEY ANALYSIS FACTORS:\n`;
+      factors.forEach(factor => {
+        formattedOdds += `  - ${factor}\n`;
+      });
+      formattedOdds += '\n';
+    }
+  }
 
   oddsData.forEach((fixture, index) => {
     formattedOdds += `${index + 1}. ${fixture.away_team} @ ${fixture.home_team}\n`;
@@ -205,4 +221,79 @@ export function findValueBets(oddsData: OddsData[]): Array<{
   });
 
   return valueBets.slice(0, 5); // Return top 5 value bets
+}
+
+/**
+ * Format multiple sports odds for cross-sport parlay suggestions
+ */
+export function formatMultiSportOddsForAI(
+  oddsDataBySport: Record<string, OddsData[]>
+): string {
+  let formattedOdds = '=== MULTI-SPORT BETTING ODDS ===\n\n';
+  
+  const sportIds = Object.keys(oddsDataBySport);
+  
+  if (sportIds.length === 0) {
+    return 'No live odds available for any sport at the moment.';
+  }
+  
+  sportIds.forEach(sportId => {
+    const oddsData = oddsDataBySport[sportId];
+    const sport = getSportById(sportId);
+    
+    if (!sport || !oddsData || oddsData.length === 0) {
+      return;
+    }
+    
+    formattedOdds += `\n${'='.repeat(60)}\n`;
+    formattedOdds += `${sport.flag} ${sport.name.toUpperCase()}\n`;
+    formattedOdds += `${'='.repeat(60)}\n\n`;
+    
+    // Add key analysis factors for this sport
+    const factors = getAnalysisFactors(sportId);
+    if (factors.length > 0) {
+      formattedOdds += `Key Analysis Factors:\n`;
+      factors.slice(0, 3).forEach(factor => {
+        formattedOdds += `  • ${factor}\n`;
+      });
+      formattedOdds += '\n';
+    }
+    
+    // Add fixtures (limit to 5 per sport for AI context)
+    const limitedFixtures = oddsData.slice(0, 5);
+    limitedFixtures.forEach((fixture, index) => {
+      formattedOdds += `${index + 1}. ${fixture.away_team} @ ${fixture.home_team}\n`;
+      formattedOdds += `   Commence: ${new Date(fixture.commence_time).toLocaleString()}\n`;
+      
+      // Get best moneyline odds
+      const moneylineMarkets: Array<{ bookmaker: string; outcomes: any[] }> = [];
+      fixture.bookmakers.forEach((bookmaker) => {
+        bookmaker.markets.forEach((market) => {
+          if (market.key === 'h2h') {
+            moneylineMarkets.push({ bookmaker: bookmaker.title, outcomes: market.outcomes });
+          }
+        });
+      });
+      
+      if (moneylineMarkets.length > 0) {
+        const bestOdds = findBestMoneylineOdds(moneylineMarkets, fixture.home_team, fixture.away_team);
+        formattedOdds += `   ${fixture.away_team}: ${formatOdds(bestOdds.away)} | ${fixture.home_team}: ${formatOdds(bestOdds.home)}\n`;
+      }
+      
+      formattedOdds += '\n';
+    });
+    
+    if (oddsData.length > 5) {
+      formattedOdds += `   ... and ${oddsData.length - 5} more fixture(s)\n\n`;
+    }
+  });
+  
+  formattedOdds += `\n${'='.repeat(60)}\n`;
+  formattedOdds += `CROSS-SPORT PARLAY TIPS:\n`;
+  formattedOdds += `- Combine picks from different sports for diversification\n`;
+  formattedOdds += `- Consider different time zones and game start times\n`;
+  formattedOdds += `- Balance favorites and underdogs for optimal risk/reward\n`;
+  formattedOdds += `- Each sport has unique factors - analyze them separately\n`;
+  
+  return formattedOdds;
 }
