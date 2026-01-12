@@ -5,6 +5,10 @@ import { withCache, CACHE_DURATIONS, generateCacheKey } from '@/lib/cache';
 // Mark as dynamic since it uses searchParams
 export const dynamic = 'force-dynamic';
 
+// Cache TTL for odds data - 5 minutes as per requirements
+// Note: CACHE_DURATIONS.ODDS is 15 minutes, but requirement specifies 5 minutes for rate limiting
+const ODDS_CACHE_TTL_SECONDS = 300;
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -22,7 +26,7 @@ export async function GET(request: NextRequest) {
     const odds = await withCache(
       cacheKey,
       () => getOdds(sport),
-      { ttl: 300 } // 5 minutes cache (300 seconds) - requirement specifies 5 min vs CACHE_DURATIONS.ODDS (15 min)
+      { ttl: ODDS_CACHE_TTL_SECONDS }
     );
 
     return NextResponse.json({ odds, cached: true });

@@ -98,6 +98,7 @@ export default function NFLPage() {
             {odds.map((fixture) => (
               <OddsCard
                 key={fixture.id || `${fixture.home_team}-${fixture.away_team}-${fixture.commence_time}`}
+                // Note: Fallback key uses team names + timestamp. Fixture IDs from API should be stable.
                 fixture={fixture}
                 onSelect={handleFixtureSelect}
               />

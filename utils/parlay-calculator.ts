@@ -24,13 +24,13 @@ export function decimalToAmerican(decimalOdds: number): number {
  * Convert American odds to fractional odds
  */
 export function americanToFractional(americanOdds: number): string {
+  const FRACTIONAL_PRECISION = 1000;
   const decimal = americanToDecimal(americanOdds);
   const fractional = decimal - 1;
   
   // Convert to fraction and simplify
-  const precision = 1000;
-  let numerator = Math.round(fractional * precision);
-  let denominator = precision;
+  let numerator = Math.round(fractional * FRACTIONAL_PRECISION);
+  let denominator = FRACTIONAL_PRECISION;
   
   // Find GCD to simplify
   const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);

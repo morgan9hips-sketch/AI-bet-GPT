@@ -165,6 +165,8 @@ function findBestTotals(markets: Array<{ bookmaker: string; outcomes: any[] }>):
 }
 
 // Value bet detection threshold
+// -150 represents a strong favorite (60% implied probability)
+// Odds better than this threshold indicate potentially favorable value
 const VALUE_BET_THRESHOLD = -150;
 
 /**
