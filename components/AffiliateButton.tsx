@@ -32,9 +32,14 @@ const BOOKMAKER_CONFIG = {
 export default function AffiliateButton({ bookmaker, className = '' }: AffiliateButtonProps) {
   const config = BOOKMAKER_CONFIG[bookmaker];
   
-  // Get affiliate ID from environment variables
+  // Get affiliate URL with affiliate ID from environment variables
   const getAffiliateUrl = () => {
-    const affiliateId = process.env[config.envKey];
+    // Access NEXT_PUBLIC_ env variables directly (available in client components)
+    const affiliateId = 
+      bookmaker === 'draftkings' ? process.env.NEXT_PUBLIC_DRAFTKINGS_AFFILIATE_ID :
+      bookmaker === 'fanduel' ? process.env.NEXT_PUBLIC_FANDUEL_AFFILIATE_ID :
+      bookmaker === 'bet365' ? process.env.NEXT_PUBLIC_BET365_AFFILIATE_ID :
+      null;
 
     // If affiliate ID exists, append it to the URL
     if (affiliateId) {

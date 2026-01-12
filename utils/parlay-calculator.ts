@@ -113,7 +113,7 @@ export function assessParlayRisk(legs: number, combinedOdds: number): {
       level: 'Moderate',
       description: 'Standard parlay with manageable risk',
     };
-  } else if (legs <= RISK_THRESHOLDS.HIGH_LEGS || Math.abs(combinedOdds) < RISK_THRESHOLDS.HIGH_ODDS) {
+  } else if (legs <= RISK_THRESHOLDS.HIGH_LEGS && Math.abs(combinedOdds) < RISK_THRESHOLDS.HIGH_ODDS) {
     return {
       level: 'High',
       description: 'Multiple legs increase difficulty',

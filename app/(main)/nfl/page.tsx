@@ -97,7 +97,7 @@ export default function NFLPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {odds.map((fixture) => (
               <OddsCard
-                key={fixture.id}
+                key={fixture.id || `${fixture.home_team}-${fixture.away_team}-${fixture.commence_time}`}
                 fixture={fixture}
                 onSelect={handleFixtureSelect}
               />
