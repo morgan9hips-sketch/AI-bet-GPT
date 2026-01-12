@@ -128,7 +128,7 @@ export default function SportSelector({ selected, onSelect, className = '' }: Sp
                       {/* Category Header */}
                       <button
                         onClick={() => toggleCategory(category)}
-                        className="w-full flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        className="w-full flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                       >
                         <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {category}

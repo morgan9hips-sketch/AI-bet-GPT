@@ -169,6 +169,21 @@ export function getDefaultSport(): Sport {
 }
 
 /**
+ * Map legacy sport names to API IDs
+ */
+export function mapLegacySportName(sport: string): string {
+  const legacyMap: Record<string, string> = {
+    'nfl': 'americanfootball_nfl',
+    'epl': 'soccer_epl',
+    'nba': 'basketball_nba',
+    'mlb': 'baseball_mlb',
+    'nhl': 'icehockey_nhl',
+  };
+  
+  return legacyMap[sport.toLowerCase()] || sport;
+}
+
+/**
  * Sport-specific analysis factors for AI
  */
 export const SPORT_ANALYSIS_FACTORS: Record<string, string[]> = {

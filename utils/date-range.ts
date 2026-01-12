@@ -115,10 +115,12 @@ export function groupByDate<T>(
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     const dateKey = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
     
-    if (!grouped.has(dateKey)) {
-      grouped.set(dateKey, []);
+    const group = grouped.get(dateKey);
+    if (group) {
+      group.push(item);
+    } else {
+      grouped.set(dateKey, [item]);
     }
-    grouped.get(dateKey)!.push(item);
   });
   
   return grouped;

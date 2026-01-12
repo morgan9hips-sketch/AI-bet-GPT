@@ -7,6 +7,9 @@ const MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-flash'];
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
 
+// Cache the working model to avoid repeated tests
+let cachedWorkingModel: { model: any; modelName: string } | null = null;
+
 // Log which model is being used on startup
 console.log(`[Gemini] Configured with primary model: ${MODELS[0]}, fallback models: ${MODELS.slice(1).join(', ')}`);
 
@@ -21,14 +24,18 @@ export interface PredictionResponse {
  * Get a working Gemini model with fallback support
  */
 async function getWorkingModel() {
+  // Return cached model if available
+  if (cachedWorkingModel) {
+    return cachedWorkingModel;
+  }
+
   for (let i = 0; i < MODELS.length; i++) {
     const modelName = MODELS[i];
     try {
       const model = genAI.getGenerativeModel({ model: modelName });
-      // Test the model with a simple request
-      await model.generateContent('test');
       console.log(`[Gemini] Successfully using model: ${modelName}`);
-      return { model, modelName };
+      cachedWorkingModel = { model, modelName };
+      return cachedWorkingModel;
     } catch (error: any) {
       console.warn(`[Gemini] Model ${modelName} failed:`, error.message);
       if (i === MODELS.length - 1) {

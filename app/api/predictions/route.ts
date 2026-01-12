@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generatePrediction } from '@/lib/gemini';
 import { getOdds } from '@/lib/odds-api';
 import { formatOddsForAI } from '@/lib/betting-context';
-import { getSportById } from '@/lib/sport-config';
+import { getSportById, mapLegacySportName } from '@/lib/sport-config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,8 +29,7 @@ export async function POST(request: NextRequest) {
         const oddsPromises = requestedSports.map(async (s: string) => {
           try {
             // Map legacy sport names to API IDs
-            const sportId = s === 'nfl' ? 'americanfootball_nfl' : 
-                           s === 'epl' ? 'soccer_epl' : s;
+            const sportId = mapLegacySportName(s);
             
             const sportConfig = getSportById(sportId);
             if (!sportConfig || !sportConfig.enabled) {
@@ -55,10 +54,8 @@ export async function POST(request: NextRequest) {
         const { formatMultiSportOddsForAI } = await import('@/lib/betting-context');
         oddsContext = formatMultiSportOddsForAI(oddsDataBySport);
       } else {
-        // Single sport request
-        const sportId = requestedSports[0] === 'nfl' ? 'americanfootball_nfl' : 
-                       requestedSports[0] === 'epl' ? 'soccer_epl' : 
-                       requestedSports[0];
+        // Single sport request - map legacy sport name to API ID
+        const sportId = mapLegacySportName(requestedSports[0]);
         
         const sportConfig = getSportById(sportId);
         if (sportConfig && sportConfig.enabled) {

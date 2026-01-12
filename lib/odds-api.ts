@@ -67,7 +67,9 @@ export async function getOdds(sport: string, options: OddsOptions = {}): Promise
     to.setDate(to.getDate() + days);
     const commenceTimeTo = to.toISOString();
 
-    console.log(`[OddsAPI] Fetching ${sport} odds from ${commenceTimeFrom} to ${commenceTimeTo}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[OddsAPI] Fetching ${sport} odds from ${commenceTimeFrom} to ${commenceTimeTo}`);
+    }
 
     const response = await axios.get(`${ODDS_API_BASE}/sports/${sport}/odds`, {
       params: {
@@ -82,7 +84,10 @@ export async function getOdds(sport: string, options: OddsOptions = {}): Promise
       timeout: 10000, // 10 second timeout
     });
 
-    console.log(`[OddsAPI] Fetched ${response.data?.length || 0} fixtures for ${sport}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[OddsAPI] Fetched ${response.data?.length || 0} fixtures for ${sport}`);
+    }
+    
     return response.data || [];
   } catch (error: any) {
     if (error.response?.status === 429) {
