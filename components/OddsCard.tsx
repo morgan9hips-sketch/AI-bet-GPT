@@ -2,6 +2,8 @@
 
 import { OddsData } from '@/lib/odds-api';
 import { formatOdds } from '@/utils/parlay-calculator';
+import SportIcon from './SportIcon';
+import { getUserTimezone, formatTimeForTimezone } from '@/utils/timezone';
 
 interface OddsCardProps {
   fixture: OddsData;
@@ -11,6 +13,7 @@ interface OddsCardProps {
 export default function OddsCard({ fixture, onSelect }: OddsCardProps) {
   const commenceDate = new Date(fixture.commence_time);
   const isUpcoming = commenceDate > new Date();
+  const userTimezone = getUserTimezone();
 
   // Extract best odds for each market
   const getBestOdds = () => {
@@ -65,8 +68,18 @@ export default function OddsCard({ fixture, onSelect }: OddsCardProps) {
       }`}
       onClick={() => onSelect && onSelect(fixture)}
     >
-      {/* Header - Teams */}
+      {/* Header - Sport Icon and Teams */}
       <div className="mb-4">
+        {/* Sport Badge */}
+        <div className="flex items-center justify-between mb-3">
+          <SportIcon sportId={fixture.sport_key} showName size="sm" />
+          {!isUpcoming && (
+            <span className="inline-block px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded">
+              Live / Completed
+            </span>
+          )}
+        </div>
+        
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
             {fixture.away_team}
@@ -78,13 +91,11 @@ export default function OddsCard({ fixture, onSelect }: OddsCardProps) {
         </div>
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {commenceDate.toLocaleDateString()} at {commenceDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {commenceDate.toLocaleDateString()} at {formatTimeForTimezone(commenceDate, userTimezone)}
           </p>
-          {!isUpcoming && (
-            <span className="inline-block mt-1 px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded">
-              In Progress / Completed
-            </span>
-          )}
+          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+            Your timezone: {userTimezone.split('/').pop()?.replace('_', ' ')}
+          </p>
         </div>
       </div>
 
@@ -188,11 +199,16 @@ export default function OddsCard({ fixture, onSelect }: OddsCardProps) {
         </div>
       </div>
 
-      {/* Footer - Number of bookmakers */}
+      {/* Footer - Number of bookmakers and best odds indicator */}
       <div className="mt-4 pt-4 border-t dark:border-gray-700">
-        <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-          Odds from {fixture.bookmakers.length} bookmaker{fixture.bookmakers.length !== 1 ? 's' : ''}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Comparing {fixture.bookmakers.length} bookmaker{fixture.bookmakers.length !== 1 ? 's' : ''}
+          </p>
+          <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
+            ✨ Best odds shown
+          </p>
+        </div>
       </div>
     </div>
   );
