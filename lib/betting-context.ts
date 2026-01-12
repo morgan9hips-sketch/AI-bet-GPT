@@ -164,6 +164,9 @@ function findBestTotals(markets: Array<{ bookmaker: string; outcomes: any[] }>):
   return { over: bestOver, under: bestUnder };
 }
 
+// Value bet detection threshold
+const VALUE_BET_THRESHOLD = -150;
+
 /**
  * Identify value bets (odds significantly better than average)
  */
@@ -183,14 +186,14 @@ export function findValueBets(oddsData: OddsData[]): Array<{
       bookmaker.markets.forEach((market) => {
         if (market.key === 'h2h') {
           market.outcomes.forEach((outcome) => {
-            // Simple value detection: odds better than -150 for favorites
-            if (outcome.price > -150 && outcome.price < 0) {
+            // Simple value detection: odds better than threshold for favorites
+            if (outcome.price > VALUE_BET_THRESHOLD && outcome.price < 0) {
               valueBets.push({
                 fixture: matchup,
                 bet: `${outcome.name} ML`,
                 bestOdds: outcome.price,
                 bookmaker: bookmaker.title,
-                value: Math.abs(outcome.price) / 150,
+                value: Math.abs(outcome.price) / Math.abs(VALUE_BET_THRESHOLD),
               });
             }
           });

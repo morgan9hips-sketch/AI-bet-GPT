@@ -25,8 +25,21 @@ export function decimalToAmerican(decimalOdds: number): number {
  */
 export function americanToFractional(americanOdds: number): string {
   const decimal = americanToDecimal(americanOdds);
-  const numerator = Math.round((decimal - 1) * 100);
-  return `${numerator}/100`;
+  const fractional = decimal - 1;
+  
+  // Convert to fraction and simplify
+  const precision = 1000;
+  let numerator = Math.round(fractional * precision);
+  let denominator = precision;
+  
+  // Find GCD to simplify
+  const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+  const divisor = gcd(numerator, denominator);
+  
+  numerator /= divisor;
+  denominator /= divisor;
+  
+  return `${numerator}/${denominator}`;
 }
 
 /**
@@ -73,6 +86,16 @@ export function calculateParlayPayout(stake: number, americanOddsArray: number[]
   };
 }
 
+// Risk assessment thresholds
+const RISK_THRESHOLDS = {
+  LOW_LEGS: 2,
+  MODERATE_LEGS: 3,
+  HIGH_LEGS: 4,
+  LOW_ODDS: 300,
+  MODERATE_ODDS: 500,
+  HIGH_ODDS: 1000,
+} as const;
+
 /**
  * Assess risk level based on number of legs and odds
  */
@@ -80,17 +103,17 @@ export function assessParlayRisk(legs: number, combinedOdds: number): {
   level: 'Low' | 'Moderate' | 'High' | 'Very High';
   description: string;
 } {
-  if (legs <= 2 && Math.abs(combinedOdds) < 300) {
+  if (legs <= RISK_THRESHOLDS.LOW_LEGS && Math.abs(combinedOdds) < RISK_THRESHOLDS.LOW_ODDS) {
     return {
       level: 'Low',
       description: 'Few legs with favorable odds',
     };
-  } else if (legs <= 3 && Math.abs(combinedOdds) < 500) {
+  } else if (legs <= RISK_THRESHOLDS.MODERATE_LEGS && Math.abs(combinedOdds) < RISK_THRESHOLDS.MODERATE_ODDS) {
     return {
       level: 'Moderate',
       description: 'Standard parlay with manageable risk',
     };
-  } else if (legs <= 4 || Math.abs(combinedOdds) < 1000) {
+  } else if (legs <= RISK_THRESHOLDS.HIGH_LEGS || Math.abs(combinedOdds) < RISK_THRESHOLDS.HIGH_ODDS) {
     return {
       level: 'High',
       description: 'Multiple legs increase difficulty',

@@ -17,12 +17,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Use cache with 5 minutes TTL (300 seconds)
+    // Use cache with 5 minutes TTL as per requirements
     const cacheKey = generateCacheKey('odds', { sport });
     const odds = await withCache(
       cacheKey,
       () => getOdds(sport),
-      { ttl: 300 } // 5 minutes cache as per requirements
+      { ttl: 300 } // 5 minutes cache (300 seconds) - requirement specifies 5 min vs CACHE_DURATIONS.ODDS (15 min)
     );
 
     return NextResponse.json({ odds, cached: true });

@@ -11,31 +11,30 @@ const BOOKMAKER_CONFIG = {
     baseUrl: 'https://sportsbook.draftkings.com',
     color: 'bg-green-600 hover:bg-green-700',
     logo: '🎯',
+    envKey: 'NEXT_PUBLIC_DRAFTKINGS_AFFILIATE_ID' as const,
   },
   fanduel: {
     name: 'FanDuel',
     baseUrl: 'https://sportsbook.fanduel.com',
     color: 'bg-blue-600 hover:bg-blue-700',
     logo: '🏈',
+    envKey: 'NEXT_PUBLIC_FANDUEL_AFFILIATE_ID' as const,
   },
   bet365: {
     name: 'Bet365',
     baseUrl: 'https://www.bet365.com',
     color: 'bg-yellow-600 hover:bg-yellow-700',
     logo: '⚡',
+    envKey: 'NEXT_PUBLIC_BET365_AFFILIATE_ID' as const,
   },
 };
 
 export default function AffiliateButton({ bookmaker, className = '' }: AffiliateButtonProps) {
   const config = BOOKMAKER_CONFIG[bookmaker];
   
-  // Get affiliate IDs from environment variables
+  // Get affiliate ID from environment variables
   const getAffiliateUrl = () => {
-    const affiliateId = 
-      bookmaker === 'draftkings' ? process.env.NEXT_PUBLIC_DRAFTKINGS_AFFILIATE_ID :
-      bookmaker === 'fanduel' ? process.env.NEXT_PUBLIC_FANDUEL_AFFILIATE_ID :
-      bookmaker === 'bet365' ? process.env.NEXT_PUBLIC_BET365_AFFILIATE_ID :
-      null;
+    const affiliateId = process.env[config.envKey];
 
     // If affiliate ID exists, append it to the URL
     if (affiliateId) {
