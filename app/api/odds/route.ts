@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOdds } from '@/lib/odds-api';
+import { withCache, CACHE_DURATIONS, generateCacheKey } from '@/lib/cache';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,9 +14,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const odds = await getOdds(sport);
+    // Use cache with 5 minutes TTL (300 seconds)
+    const cacheKey = generateCacheKey('odds', { sport });
+    const odds = await withCache(
+      cacheKey,
+      () => getOdds(sport),
+      { ttl: 300 } // 5 minutes cache as per requirements
+    );
 
-    return NextResponse.json({ odds });
+    return NextResponse.json({ odds, cached: true });
   } catch (error) {
     console.error('Odds API error:', error);
     return NextResponse.json(
