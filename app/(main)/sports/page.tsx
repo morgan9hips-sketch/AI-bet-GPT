@@ -42,6 +42,14 @@ function SportsPageContent() {
       
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // Handle 422 - Sport not available
+        if (response.status === 422) {
+          setError(errorData.message || 'This sport is not currently available');
+          setFixtures([]);
+          return;
+        }
+        
         throw new Error(errorData.message || 'Failed to fetch odds');
       }
 
@@ -139,11 +147,47 @@ function SportsPageContent() {
       ) : error ? (
         /* Error State */
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-          <div className="text-center text-red-600 dark:text-red-400">
-            <p className="text-lg font-semibold mb-2">⚠️ {error}</p>
+          <div className="text-center">
+            <div className="text-red-600 dark:text-red-400 mb-4">
+              <p className="text-lg font-semibold mb-2">⚠️ {error}</p>
+            </div>
+            
+            {/* Suggest alternative sports */}
+            <div className="mt-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Try one of these popular sports instead:
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <button
+                  onClick={() => handleSportSelect('americanfootball_nfl')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  🏈 NFL
+                </button>
+                <button
+                  onClick={() => handleSportSelect('basketball_nba')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  🏀 NBA
+                </button>
+                <button
+                  onClick={() => handleSportSelect('soccer_epl')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  ⚽ Premier League
+                </button>
+                <button
+                  onClick={() => handleSportSelect('baseball_mlb')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  ⚾ MLB
+                </button>
+              </div>
+            </div>
+            
             <button
               onClick={fetchOdds}
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="mt-6 px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
               Try Again
             </button>
