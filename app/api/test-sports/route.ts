@@ -16,12 +16,9 @@ const SPORTS_TO_TEST = [
   'soccer_germany_bundesliga',
   'soccer_italy_serie_a',
   
-  // South African Sports
+  // South African Sports (to verify availability)
   'soccer_south_africa_premiership',
   'rugbyunion_super_rugby',
-  'rugbyunion_currie_cup',
-  'rugbyunion_world_cup',
-  'cricket_big_bash',
   'cricket_test_match',
   'cricket_international_t20',
   

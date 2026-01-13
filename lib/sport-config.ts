@@ -103,7 +103,7 @@ export const AVAILABLE_SPORTS: Sport[] = [
     category: 'South African', 
     flag: '⚽🇿🇦',
     enabled: true,
-    regions: ['uk', 'za']
+    regions: ['za']
   },
   { 
     id: 'rugbyunion_super_rugby', 
