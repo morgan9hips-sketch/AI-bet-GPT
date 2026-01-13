@@ -75,7 +75,15 @@ export async function GET(request: NextRequest) {
       });
     } catch (oddsError: any) {
       // Handle specific errors from odds API
-      if (oddsError.message.includes('Rate limit')) {
+      if (oddsError.status === 422 || oddsError.message.includes('not currently available')) {
+        console.error(`[Odds API Route] Sport "${sport}" not available (422)`);
+        return NextResponse.json({
+          error: 'Sport not available',
+          message: oddsError.message || `The sport "${sport}" is not currently available. Try NFL, NBA, or EPL.`,
+          availableSports: ['americanfootball_nfl', 'basketball_nba', 'soccer_epl', 'baseball_mlb', 'icehockey_nhl'],
+          odds: [],
+        }, { status: 422 });
+      } else if (oddsError.message.includes('Rate limit')) {
         return NextResponse.json(
           { 
             error: 'Rate limit reached',

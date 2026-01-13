@@ -99,23 +99,23 @@ export const AVAILABLE_SPORTS: Sport[] = [
   // South African Sports 🇿🇦
   { 
     id: 'soccer_south_africa_premiership', 
-    name: 'PSL (South Africa)', 
+    name: 'PSL - Premier Soccer League', 
     category: 'South African', 
     flag: '⚽🇿🇦',
     enabled: true,
     regions: ['za']
   },
   { 
-    id: 'rugbyunion_world_cup', 
-    name: 'Rugby World Cup', 
+    id: 'rugbyunion_super_rugby', 
+    name: 'URC Rugby (Bulls, Stormers, Sharks, Lions)', 
     category: 'South African', 
     flag: '🏉🇿🇦',
     enabled: true,
     regions: ['uk', 'za']
   },
   { 
-    id: 'cricket_big_bash', 
-    name: 'Cricket Big Bash', 
+    id: 'cricket_test_match', 
+    name: 'Cricket - Proteas (South Africa)', 
     category: 'South African', 
     flag: '🏏🇿🇦',
     enabled: true,

@@ -1,21 +1,26 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import DarkModeToggle from './DarkModeToggle';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 export default function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: '📊' },
     { href: '/chat', label: 'AI Chat', icon: '💬' },
     { href: '/bets', label: 'My Bets', icon: '🎯' },
-    { href: '/nfl', label: 'NFL', icon: '🏈' },
-    { href: '/epl', label: 'EPL', icon: '⚽' },
     { href: '/pricing', label: 'Pricing', icon: '💎' },
     { href: '/api-docs', label: 'API Docs', icon: '📖' },
   ];
+
+  const navigateToSport = (sportKey: string) => {
+    router.push(`/sports?sport=${sportKey}`);
+  };
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg">
@@ -42,6 +47,114 @@ export default function Navigation() {
                 {item.label}
               </Link>
             ))}
+            
+            {/* Sports Dropdown */}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center ${
+                    pathname === '/sports'
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <span className="mr-1">🏆</span>
+                  Sports
+                  <ChevronDownIcon className="ml-1 h-4 w-4" />
+                </button>
+              </DropdownMenu.Trigger>
+
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className="min-w-[220px] bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-50"
+                  sideOffset={5}
+                >
+                  {/* American Sports */}
+                  <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    🇺🇸 American Sports
+                  </DropdownMenu.Label>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('americanfootball_nfl')}
+                  >
+                    🏈 NFL
+                  </DropdownMenu.Item>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('basketball_nba')}
+                  >
+                    🏀 NBA
+                  </DropdownMenu.Item>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('baseball_mlb')}
+                  >
+                    ⚾ MLB
+                  </DropdownMenu.Item>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('icehockey_nhl')}
+                  >
+                    🏒 NHL
+                  </DropdownMenu.Item>
+
+                  <DropdownMenu.Separator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
+
+                  {/* Soccer */}
+                  <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    ⚽ Soccer
+                  </DropdownMenu.Label>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('soccer_epl')}
+                  >
+                    ⚽ Premier League
+                  </DropdownMenu.Item>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('soccer_uefa_champs_league')}
+                  >
+                    ⚽ Champions League
+                  </DropdownMenu.Item>
+
+                  <DropdownMenu.Separator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
+
+                  {/* South African Sports */}
+                  <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    🇿🇦 South African
+                  </DropdownMenu.Label>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('soccer_south_africa_premiership')}
+                  >
+                    ⚽ PSL (Soccer)
+                  </DropdownMenu.Item>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('rugbyunion_super_rugby')}
+                  >
+                    🏉 URC Rugby
+                  </DropdownMenu.Item>
+                  
+                  <DropdownMenu.Item
+                    className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 outline-none"
+                    onClick={() => navigateToSport('cricket_test_match')}
+                  >
+                    🏏 Proteas Cricket
+                  </DropdownMenu.Item>
+
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+            
             <DarkModeToggle />
           </div>
 

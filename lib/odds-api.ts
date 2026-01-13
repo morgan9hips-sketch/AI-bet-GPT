@@ -69,6 +69,8 @@ export async function getOdds(sport: string, options: OddsOptions = {}): Promise
 
     if (process.env.NODE_ENV === 'development') {
       console.log(`[OddsAPI] Fetching ${sport} odds from ${commenceTimeFrom} to ${commenceTimeTo}`);
+      console.log(`[OddsAPI] URL: ${ODDS_API_BASE}/sports/${sport}/odds`);
+      console.log(`[OddsAPI] Regions: ${regions}, Markets: ${markets}`);
     }
 
     const response = await axios.get(`${ODDS_API_BASE}/sports/${sport}/odds`, {
@@ -85,12 +87,18 @@ export async function getOdds(sport: string, options: OddsOptions = {}): Promise
     });
 
     if (process.env.NODE_ENV === 'development') {
+      console.log(`[OddsAPI] Response status: ${response.status}`);
       console.log(`[OddsAPI] Fetched ${response.data?.length || 0} fixtures for ${sport}`);
     }
     
     return response.data || [];
   } catch (error: any) {
-    if (error.response?.status === 429) {
+    if (error.response?.status === 422) {
+      console.error(`[OddsAPI] Sport "${sport}" not available via The Odds API (422 error)`);
+      const err: any = new Error(`Sport "${sport}" is not currently available. Try NFL, NBA, or EPL.`);
+      err.status = 422;
+      throw err;
+    } else if (error.response?.status === 429) {
       console.error('[OddsAPI] Rate limit exceeded');
       throw new Error('Rate limit exceeded. Please try again later.');
     } else if (error.response?.status === 401) {
@@ -101,6 +109,10 @@ export async function getOdds(sport: string, options: OddsOptions = {}): Promise
       throw new Error('Request timeout. Please try again.');
     } else {
       console.error('[OddsAPI] Error fetching odds:', error.message);
+      if (error.response) {
+        console.error(`[OddsAPI] Response status: ${error.response.status}`);
+        console.error(`[OddsAPI] Response data:`, error.response.data);
+      }
       throw new Error(`Failed to fetch odds: ${error.message}`);
     }
   }
